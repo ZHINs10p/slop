@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AquaOpt AI — 산업폐수 수질예측·공정최적화 SaaS</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#fbfcfd;--card:#fff;--tx:#1f2933;--mu:#64748b;--bd:#e6ebf0;--pr:#0a6ea8;--te:#1c93b5;--mid:#14213d;--gold:#d99a2b;--ok:#2e9e6b;--bad:#c24b4b;--soft:#eef5f9}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1626;--card:#172038;--tx:#e8eef4;--mu:#9fb2cc;--bd:#2a3556;--pr:#4aa3d0;--te:#5ec0d8;--mid:#cfd8ff;--soft:#1d2a4a}}
+:root[data-theme="dark"]{--bg:#0f1626;--card:#172038;--tx:#e8eef4;--mu:#9fb2cc;--bd:#2a3556;--pr:#4aa3d0;--te:#5ec0d8;--mid:#cfd8ff;--soft:#1d2a4a}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;line-height:1.5}
+header{background:rgba(255,255,255,.94);backdrop-filter:blur(8px);color:var(--tx);padding:12px 24px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:5;border-bottom:1px solid var(--bd)}
+header h1{font-size:18px;margin:0}header small{color:var(--mu)}
+.logo{font-size:24px}.sp{flex:1}
+.pill{font-size:12px;padding:3px 10px;border-radius:99px;background:#e8f6ef;color:#1d7a52;font-weight:600}
+nav{display:flex;gap:6px;padding:10px 20px 0;overflow-x:auto;border-bottom:1px solid var(--bd);background:var(--card)}
+nav button{border:0;background:none;color:var(--mu);padding:10px 14px;font:inherit;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+nav button.on{color:var(--pr);border-color:var(--gold)}
+main{max-width:1100px;margin:0 auto;padding:18px 20px 40px}
+.tab{display:none}.tab.on{display:block}
+.grid{display:grid;gap:14px}.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:20px;box-shadow:0 1px 2px rgba(20,33,61,.04),0 8px 24px rgba(20,33,61,.05)}
+.card h3{margin:0 0 8px;font-size:15px;color:var(--mid)}
+.kpi .v{font-size:30px;font-weight:700;color:var(--pr)}.kpi .u{font-size:13px;color:var(--mu)}
+.kpi .s{font-size:12px;margin-top:2px}.ok{color:var(--ok)}.bad{color:var(--bad)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.chip{border:1px solid var(--bd);background:var(--soft);color:var(--tx);border-radius:99px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer}
+.chip.on{background:var(--pr);color:#fff;border-color:var(--pr)}
+.btn{background:var(--pr);color:#fff;border:0;border-radius:10px;padding:10px 18px;font:inherit;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s}.btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(10,110,168,.25)}
+.btn.alt{background:var(--soft);color:var(--tx);border:1px solid var(--bd)}
+svg{width:100%;height:auto;display:block}
+.alert{border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:14px}
+.alert.ok{background:#e3f4ec;color:#1d6b49}.alert.bad{background:#fbe6e6;color:#8f2f2f;font-weight:600}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alert.ok{background:#173a2d;color:#7bdcae}:root:not([data-theme="light"]) .alert.bad{background:#4a2227;color:#ffb3b3}}
+.bar{height:22px;border-radius:6px;background:var(--soft);overflow:hidden;margin:4px 0 10px}
+.bar i{display:block;height:100%;border-radius:6px;transition:width .5s}
+.row{display:flex;justify-content:space-between;font-size:13px;color:var(--mu)}
+label{display:block;font-size:13px;color:var(--mu);margin:10px 0 3px}
+input[type=number],select{width:100%;padding:8px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx);font:inherit}
+input[type=range]{width:100%}
+.big{font-size:28px;font-weight:700;color:var(--gold)}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid var(--bd);text-align:left}th{background:var(--pr);color:#fff}
+.scroll{overflow-x:auto}
+.note{font-size:12px;color:var(--mu);margin-top:8px}
+input:not([type]){width:100%;padding:8px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx);font:inherit}
+.btn:disabled{opacity:.5;cursor:not-allowed}.locked>*:not(.lockcard){display:none}
+.plan{display:flex;flex-direction:column}.plan ul{padding-left:18px;font-size:13px;flex:1}.plan.hot{border:2px solid var(--gold)}.plan small{font-size:13px;color:var(--mu)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#21295c;color:#fff;padding:10px 18px;border-radius:8px;z-index:9;font-size:14px}
+:root:not([data-theme="light"]){--bg:#fbfcfd;--card:#fff;--tx:#1f2933;--mu:#64748b;--bd:#e6ebf0;--pr:#0a6ea8;--te:#1c93b5;--mid:#14213d;--soft:#eef5f9}
+:root:not([data-theme="light"]) .alert.ok{background:#e8f6ef;color:#1d6b49}:root:not([data-theme="light"]) .alert.bad{background:#fdecec;color:#8f2f2f}
+main{overflow-x:hidden}nav{padding:8px 24px 0;gap:4px}nav button{border-radius:8px 8px 0 0}
+@keyframes inR{from{opacity:0;transform:translateX(56px)}to{opacity:1;transform:none}}@keyframes inL{from{opacity:0;transform:translateX(-56px)}to{opacity:1;transform:none}}
+.tab.inR{animation:inR .5s cubic-bezier(.22,.8,.3,1)}.tab.inL{animation:inL .5s cubic-bezier(.22,.8,.3,1)}
+.hero{text-align:center;padding:48px 0 28px}.hero h2{font-size:clamp(28px,5.5vw,46px);line-height:1.3;margin:14px 0;color:var(--mid)}.hero p.lead{max-width:640px;margin:0 auto 22px;color:var(--mu);font-size:16px}
+.eyebrow{display:inline-block;background:#e8f4fb;color:var(--pr);border-radius:99px;padding:5px 14px;font-size:13px;font-weight:600}.hero .btn{padding:13px 24px;font-size:15px;margin:4px}
+.stats{display:flex;justify-content:center;gap:36px;flex-wrap:wrap;margin:30px 0 6px}.stats b{display:block;font-size:30px;color:var(--pr)}.stats span{font-size:13px;color:var(--mu)}
+.sec{margin:44px 0 16px;text-align:center}.sec h3{font-size:24px;margin:0;color:var(--mid)}.sec p{color:var(--mu);margin:6px 0 0}
+.ft .ic{font-size:30px}.ft h4{margin:8px 0 6px;font-size:16px;color:var(--mid)}.ft p{margin:0;font-size:14px;color:var(--mu)}
+.stp{display:flex;gap:12px;align-items:flex-start;font-size:14px}.stp i{flex:none;width:30px;height:30px;border-radius:50%;background:var(--pr);color:#fff;font-style:normal;display:grid;place-items:center;font-weight:700}
+details{border-bottom:1px solid var(--bd);padding:12px 0}summary{cursor:pointer;font-weight:600;color:var(--mid)}details p{color:var(--mu);font-size:14px;margin:8px 0 0}
+.cta{text-align:center;background:linear-gradient(135deg,#eaf5fb,#f5fbf8);margin-top:28px}
+footer{text-align:center;color:var(--mu);font-size:12px;padding:10px 20px 24px}
+
+[hidden]{display:none!important}main{position:relative;z-index:1}
+body::before,body::after{content:"";position:fixed;top:60px;bottom:0;width:clamp(120px,16vw,260px);background:no-repeat center/contain;opacity:.26;pointer-events:none;z-index:0}
+body::before{left:0;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20600%22%20fill%3D%22none%22%20stroke%3D%22%230a6ea8%22%20stroke-width%3D%223%22%3E%3Cpath%20d%3D%22M100%2030C100%2030%2038%20115%2038%20170a62%2062%200%200%200%20124%200C162%20115%20100%2030%20100%2030Z%22%20fill%3D%22%231cb5d8%22%20fill-opacity%3D%22.4%22%2F%3E%3Cpath%20d%3D%22M85%20150c0%2020%208%2036%2024%2042%22%20stroke%3D%22%23fff%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M20%20300c27-22%2053%2022%2080%200s53-22%2080%200%22%2F%3E%3Cpath%20d%3D%22M20%20332c27-22%2053%2022%2080%200s53-22%2080%200%22%2F%3E%3Cpath%20d%3D%22M20%20364c27-22%2053%2022%2080%200s53-22%2080%200%22%2F%3E%3Ccircle%20cx%3D%2270%22%20cy%3D%22480%22%20r%3D%2226%22%2F%3E%3Ccircle%20cx%3D%2270%22%20cy%3D%22480%22%20r%3D%2248%22%20stroke-opacity%3D%22.6%22%2F%3E%3Ccircle%20cx%3D%2270%22%20cy%3D%22480%22%20r%3D%2270%22%20stroke-opacity%3D%22.3%22%2F%3E%3Cpath%20d%3D%22M150%20410c0%200-20%2028-20%2046a20%2020%200%200%200%2040%200c0-18-20-46-20-46Z%22%20fill%3D%22%231cb5d8%22%20fill-opacity%3D%22.4%22%2F%3E%3Cpath%20d%3D%22M20%20570c27-22%2053%2022%2080%200s53-22%2080%200%22%2F%3E%3C%2Fsvg%3E")}
+body::after{right:0;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20600%22%20fill%3D%22none%22%20stroke%3D%22%232e9e6b%22%20stroke-width%3D%223%22%3E%3Cpath%20d%3D%22M30%20160C30%2080%20100%2030%20175%2040c0%2080-35%20140-110%20140-14%200-26-6-35-20Z%22%20fill%3D%22%232e9e6b%22%20fill-opacity%3D%22.35%22%2F%3E%3Cpath%20d%3D%22M30%20175C70%20130%20110%20100%20150%2070%22%2F%3E%3Crect%20x%3D%2225%22%20y%3D%22330%22%20width%3D%22150%22%20height%3D%22100%22%20rx%3D%228%22%2F%3E%3Cpath%20d%3D%22M25%20362h150M25%20396h150%22%20stroke-opacity%3D%22.5%22%2F%3E%3Cpath%20d%3D%22M55%20330v-50h32v50M118%20330v-80h32v80%22%2F%3E%3Cpath%20d%3D%22M71%20270c0-14%2012-14%2012-30M134%20240c0-14%2012-14%2012-30%22%20stroke%3D%22%230a6ea8%22%20stroke-opacity%3D%22.6%22%2F%3E%3Cpath%20d%3D%22M25%20470c25-20%2050%2020%2075%200s50-20%2075%200%22%20stroke%3D%22%230a6ea8%22%2F%3E%3Cpath%20d%3D%22M60%20540a40%2040%200%201%201%208%2024%22%2F%3E%3Cpath%20d%3D%22M62%20528l-6%2016%2018-4%22%2F%3E%3C%2Fsvg%3E")}
+@media(max-width:1000px){body::before,body::after{display:none}}
+@keyframes gtm{to{background-position:300% 0}}@keyframes up{from{opacity:0;transform:translateY(70px) skewY(3deg)}to{opacity:1;transform:none}}
+@keyframes dyn{from{opacity:0;transform:translateY(90px) scale(.9) rotate(-1.5deg);filter:blur(12px)}to{opacity:1;transform:none;filter:none}}
+@keyframes dsh{to{stroke-dashoffset:-22}}@keyframes mq{to{transform:translateX(-50%)}}@keyframes bl{from{transform:scale(1)}to{transform:scale(1.15) translateY(-12px)}}
+#t0.inR,#t0.inL{animation:dyn .9s cubic-bezier(.16,1,.3,1)}
+.dp{stroke-dasharray:8 14;animation:dsh 1s linear infinite}.wl{transition:all .8s}
+#t0{font-size:17px}.hero{position:relative;padding:56px 0 24px}
+.hero::before{content:"";position:absolute;inset:-40px -10%;z-index:-1;background:radial-gradient(circle at 18% 30%,rgba(28,181,216,.2),transparent 45%),radial-gradient(circle at 82% 60%,rgba(46,158,107,.16),transparent 45%);animation:bl 9s ease-in-out infinite alternate}
+.hero>*{animation:up 1s cubic-bezier(.16,1,.3,1) both}.hero>*:nth-child(2){animation-delay:.12s}.hero>*:nth-child(3){animation-delay:.26s}.hero>*:nth-child(4){animation-delay:.4s}.hero>*:nth-child(n+5){animation-delay:.55s}
+#t0 .hero h2{font-size:clamp(42px,8.5vw,84px);font-weight:900;letter-spacing:-.035em;line-height:1.12}
+.gt{background:linear-gradient(90deg,#0a6ea8,#19b6a0,#2e9e6b,#0a6ea8);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gtm 6s linear infinite}
+#t0 .hero p.lead{font-size:clamp(17px,2.2vw,21px);max-width:760px;line-height:1.7}#t0 .hero .btn{padding:15px 28px;font-size:17px}
+#t0 .stats{gap:48px}#t0 .stats b{font-size:clamp(34px,5vw,52px);font-weight:900}#t0 .stats span{font-size:15px}
+.mq{overflow:hidden;white-space:nowrap;margin:40px -20px}.mq div{display:inline-block;animation:mq 26s linear infinite}
+.mq span{font-size:clamp(44px,8vw,96px);font-weight:900;color:transparent;-webkit-text-stroke:1.5px rgba(10,110,168,.5);margin-right:48px;letter-spacing:.02em}
+#t0 .sec{margin:70px 0 24px}#t0 .sec h3{font-size:clamp(30px,5vw,46px);font-weight:900;letter-spacing:-.02em}#t0 .sec p{font-size:18px}
+#t0 .ft{padding:30px}#t0 .ft .ic{font-size:44px}#t0 .ft h4{font-size:23px;margin:12px 0 10px}#t0 .ft p{font-size:16px;line-height:1.7}
+#t0 .stp{font-size:16px;line-height:1.7}#t0 .stp i{width:40px;height:40px;font-size:18px}#t0 summary{font-size:18px}#t0 details p{font-size:16px}
+.rv{opacity:0;transition:opacity .9s,transform .9s cubic-bezier(.16,1,.3,1)}.rv.u{transform:translateY(70px)}.rv.l{transform:translateX(-110px) rotate(-2deg)}.rv.r{transform:translateX(110px) rotate(2deg)}.rv.in{opacity:1;transform:none}
+
+.sc{background:#0b1522;border-radius:14px;padding:12px;color:#d6e4f0;font-size:13px}.sc .bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.sc .tt{font-weight:800;color:#7fd1f0;letter-spacing:.04em;margin-right:auto}.sc .ch{background:#13263b;border:1px solid #20405d;border-radius:6px;padding:3px 9px;font-size:12px;font-family:monospace}
+.ok2{color:#22c55e}.sc .gr{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(250px,1fr);gap:10px}@media(max-width:860px){.sc .gr{grid-template-columns:1fr}}
+.sc .pn{background:#0f1d2e;border:1px solid #1d3550;border-radius:8px;padding:8px 10px;margin-top:10px}.sc .pn h5{margin:0 0 6px;font-size:12px;color:#7fd1f0;letter-spacing:.05em}
+.sc table{font-size:12px;font-family:monospace}.sc th{background:#173250;color:#9fc6e6}.sc td,.sc th{border-bottom:1px solid #1d3550;padding:5px 6px;color:#d6e4f0}
+.sc .btn{padding:5px 11px;font-size:12px;border-radius:6px;margin:2px}.sc .btn.alt{background:#173250;color:#d6e4f0;border:1px solid #25507a}
+.blk{animation:blk 1s steps(2) infinite}@keyframes blk{50%{opacity:.3}}.sc g[data-eq]{cursor:pointer}.sc .vt{font:700 11px monospace;fill:#e8f6ff;text-anchor:middle}.sc .tg{font:10px monospace;fill:#7e93a8;text-anchor:middle}
+.al{display:flex;gap:6px;font:12px monospace;padding:4px 0;border-bottom:1px solid #1d3550}
+#t7:fullscreen,#t7:-webkit-full-screen{background:#0b1522;padding:18px;overflow:auto}#t7:fullscreen h3,#t7:fullscreen .note{color:#d6e4f0}
+</style>
+</head>
+<body>
+<header><span class="logo">💧</span><div><h1>AquaOpt AI</h1><small>산업폐수 수질예측 · 공정 최적화 SaaS (과제용 데모)</small></div><span class="sp"></span><span class="pill">● 실시간 시뮬레이션</span><span class="pill" id="planBadge" style="background:#d99a2b;color:#21295c">체험판</span></header>
+<nav id="nav">
+<button class="on" data-t="t0">홈</button><button data-t="t1">대시보드</button><button data-t="t2">수질 예측</button><button data-t="t7">🎛 제어실</button><button data-t="t3">약품·에너지 최적화</button><button data-t="t4">ROI·ESG 리포트</button><button data-t="t6">구독·결제</button><button data-t="t5">소개·사례</button>
+</nav>
+<main>
+<section class="tab on" id="t0">
+<div class="hero"><span class="eyebrow">FOR ENTERPRISE · 제조 · 화학 · 식품 · 반도체 사업장</span>
+<h2>폐수처리 비용,<br><span class="gt">이제 데이터로 줄이세요</span></h2>
+<p class="lead">AquaOpt AI는 수질 변화를 앞서 예측해 약품·전력 비용과 방류 리스크를 낮추는 <b>기업용 폐수 운영 최적화 플랫폼</b>입니다. 설비 교체 없이, 한 분기 안에 효과를 숫자로 검증하세요.</p>
+<div><button class="btn" data-go="t4">우리 사업장 절감액 계산 →</button><button class="btn alt" data-go="t1">라이브 데모</button><button class="btn alt" data-go="t6">도입 플랜</button></div>
+<div class="stats"><div><b>25.3%↓</b><span>약품 투입량 절감 사례</span></div><div><b>20%↓</b><span>송풍 전력 절감 사례</span></div><div><b>9시간</b><span>선행 수질 예측</span></div><div><b>Scope 2</b><span>온실가스 간접배출 저감</span></div></div>
+<p class="note">※ 국내 선행 적용사례(SK에코플랜트 등) 보도 기준 참고값이며, 사업장 조건에 따라 달라집니다.</p></div>
+<div class="mq"><div><span>PREDICT ✦ OPTIMIZE ✦ COMPLY ✦ DECARBONIZE ✦</span><span>PREDICT ✦ OPTIMIZE ✦ COMPLY ✦ DECARBONIZE ✦</span></div></div>
+<div class="sec rv u"><h3>경영진이 보는 세 가지 가치</h3><p>탄소중립·ESG 요구가 커지는 지금, 폐수처리는 아직 손대지 않은 절감 영역입니다.</p></div>
+<div class="grid g4"><div class="card ft rv l"><div class="ic">💰</div><h4>운영비 구조를 바꿉니다</h4><p>약품비와 전력비는 폐수처리 원가의 큰 축입니다. 예측 기반 최적화로 과투입을 줄여 연간 운영비를 낮춥니다.</p></div>
+<div class="card ft rv u"><div class="ic">🛡️</div><h4>환경 리스크를 선제 관리</h4><p>방류 기준 초과 가능성을 몇 시간 앞서 경보해 과태료·가동 중단·평판 리스크를 줄입니다.</p></div>
+<div class="card ft rv r"><div class="ic">🌱</div><h4>ESG·탄소 성과를 데이터로</h4><p>전력 절감과 연동된 Scope 2 저감량을 자동 집계해 목표관리제·RE100·ESG 보고에 활용합니다.</p></div></div>
+<div class="sec rv u"><h3>도입은 3단계, 효과는 숫자로 검증</h3><p>각 단계의 기간은 예시이며 사업장 협의로 조정합니다.</p></div>
+<div class="grid g4"><div class="card stp rv l"><i>1</i><div><b>진단·PoC (약 4주)</b><br>기존 PLC·SCADA 데이터를 연동하고 약품·전력 사용량 베이스라인을 산정합니다.</div></div>
+<div class="card stp rv u"><i>2</i><div><b>파일럿 (약 1분기)</b><br>1개 라인에 적용해 절감 KPI와 수질 예측 정확도를 검증합니다.</div></div>
+<div class="card stp rv r"><i>3</i><div><b>전사 확산·ESG 연계</b><br>다사업장으로 확장하고 온실가스·ESG 리포트와 연계해 구독을 확대합니다.</div></div></div>
+<div class="sec rv u"><h3>의사결정자가 자주 묻는 질문</h3></div>
+<div class="card rv u"><details><summary>기존 PLC/SCADA를 교체해야 하나요?</summary><p>아니요. 기존 제어를 대체하지 않고 그 위에서 앞으로의 변화를 예측하고 권고하는 보완 계층입니다.</p></details>
+<details><summary>도입 효과는 어떻게 검증하나요?</summary><p>도입 전 약품·전력 사용량 베이스라인을 먼저 측정하고, 도입 후 동일 조건에서 비교해 절감액을 산정합니다. 선행사례 수치는 참고값입니다.</p></details>
+<details><summary>BOD는 실시간으로 알 수 있나요?</summary><p>BOD는 측정에 5일이 걸려, TOC·COD·UV·유량 등 실시간 지표로 추정(소프트센서)하고 주기적 실험실 BOD로 보정합니다.</p></details></div>
+<div class="card cta rv u"><h3 style="margin:0 0 8px;font-size:clamp(24px,4vw,34px);font-weight:900">우리 공장의 절감액, 먼저 계산해 보세요</h3><p style="color:var(--mu);margin:0 0 16px">이 사이트의 결제와 센서 데이터는 모두 데모용 가상입니다.</p><button class="btn" data-go="t4">절감액 계산하기</button> <button class="btn alt" data-go="t1">대시보드 보기</button></div>
+</section>
+
+<section class="tab" id="t1">
+<div id="alertBox" class="alert ok">정상 운전 중입니다.</div>
+<div class="grid g4" id="kpis"></div>
+<div class="card" style="margin-top:14px"><h3>실시간 센서 추이 (10분 간격, 최근 8시간)</h3><div class="chips" id="chips1"></div><div id="chart1"></div>
+<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="spikeBtn">⚠ 고농도 폐수 유입 시뮬레이션</button><button class="btn alt" id="pauseBtn">일시정지</button></div>
+<p class="note">실선=측정값, 점선=AI 예측, 붉은 선=관리기준(데모값). 센서값은 가상의 시뮬레이션 데이터입니다. BOD는 실시간으로 잴 수 있는 지표(TOC·COD·UV·유량·pH)로 추정하는 소프트센서 값이며, 주기적인 실험실 BOD(5일 배양)로 보정하는 것을 전제로 합니다.</p></div>
+</section>
+
+<section class="tab" id="t2">
+<div class="card"><h3>수질 변화 예측 (AI 선행예측)</h3>
+<div class="chips" id="chips2"></div>
+<label>예측 시간 (선행예측)</label>
+<select id="hor"><option value="18">3시간 후</option><option value="36">6시간 후</option><option value="54" selected>9시간 후</option></select>
+<button class="btn" id="goScada" style="margin:12px 0">🎛 제어실(SCADA) 전용 화면으로 이동 →</button>
+<div id="chart2" style="margin-top:10px"></div>
+<div id="predTxt" class="note"></div></div>
+<div class="card" style="margin-top:14px"><h3>예측 모델 개요</h3><p style="margin:0;font-size:14px">센서 → 전처리(이상치 제거·평균화) → 감쇠 추세(Holt) 예측 → 최적화 → 자동제어. 본 데모는 감쇠 추세 기반의 단순 예측기를 사용하며, 실제 서비스에서는 LSTM·PLS 등 학습모델로 대체합니다. 국내 선행사례(SK에코플랜트 ZERO4 wwt)는 최대 9시간 선행예측, 정확도 약 90%를 보고했습니다.</p></div>
+</section>
+
+<section class="tab" id="t3">
+<div class="grid g2">
+<div class="card"><h3>① 응집제(PAC) 투입량 최적화</h3>
+<div class="row"><span>기존 반응형 제어(가정값)</span><span>150 mg/L</span></div><div class="bar"><i id="b1" style="background:var(--mu);width:100%"></i></div>
+<div class="row"><span>AI 권고 투입</span><span id="d2"></span></div><div class="bar"><i id="b2" style="background:var(--te)"></i></div>
+<div class="big" id="dSave"></div><div class="note">예측 COD·pH를 근거로 산출: 70 + 0.8×COD예측 + 8×|pH−7.2| (데모 수식)</div></div>
+<div class="card"><h3>② 송풍기(폭기) 출력 최적화</h3>
+<div class="row"><span>기존 반응형 제어(가정값)</span><span>100 %</span></div><div class="bar"><i style="background:var(--mu);width:100%"></i></div>
+<div class="row"><span>AI 권고 출력</span><span id="bl2"></span></div><div class="bar"><i id="b3" style="background:var(--te)"></i></div>
+<div class="big" id="bSave"></div><div class="note">예측 BOD 부하에 비례하여 출력 조정: 65 + 35×부하율 (데모 수식)</div></div>
+</div>
+<div class="card" style="margin-top:14px"><h3>자동제어 상태</h3><div id="ctl" style="font-size:14px"></div>
+<label><input type="checkbox" id="auto"> AI 자동제어 활성화 — 기존 PLC/SCADA 위에 얹는 예측·최적화 계층 <span id="autoLbl" class="note"></span></label></div>
+</section>
+
+<section class="tab" id="t4">
+<div class="grid g2">
+<div class="card"><h3>사업장 정보 입력</h3>
+<label>연간 약품비 (백만원)</label><input type="number" id="i1" value="120">
+<label>연간 전력비 (백만원)</label><input type="number" id="i2" value="200">
+<label>전력 단가 (원/kWh)</label><input type="number" id="i3" value="120">
+<label>약품 절감률 <b id="v4">25.3</b>% (선행사례 25.3%~37.2%)</label><input type="range" id="i4" min="5" max="40" step="0.1" value="25.3">
+<label>전력 절감률 <b id="v5">20</b>% (선행사례 20%~37.2%)</label><input type="range" id="i5" min="5" max="40" step="0.1" value="20">
+<label>월 구독료 (만원)</label><input type="number" id="i6" value="300">
+<label>전력 배출계수 (kgCO₂/kWh, 가정값)</label><input type="number" id="i7" value="0.4594" step="0.001"></div>
+<div class="card"><h3>예상 효과</h3>
+<div class="row"><span>연간 운영비 절감</span></div><div class="big" id="r1"></div>
+<div class="row" style="margin-top:10px"><span>연간 구독료</span></div><div id="r2" style="font-size:20px;font-weight:700"></div>
+<div class="row" style="margin-top:10px"><span>순이익 (절감 − 구독료)</span></div><div class="big" id="r3"></div>
+<div class="row" style="margin-top:10px"><span>연간 온실가스(Scope 2) 저감</span></div><div id="r4" style="font-size:20px;font-weight:700;color:var(--ok)"></div>
+<div class="row" style="margin-top:10px"><span>투자 회수 기간</span></div><div id="r5" style="font-size:20px;font-weight:700"></div>
+<p class="note">절감률은 국내 언론보도 사례(SK에코플랜트 등)를 참고한 가정값이며 실제 성과는 현장마다 다릅니다.</p>
+<button class="btn" id="print">리포트 인쇄 / PDF 저장</button></div>
+</div></section>
+
+<section class="tab" id="t5">
+<div class="card"><h3>서비스 소개</h3><p style="margin:0 0 6px;font-size:14px">AquaOpt AI는 실시간 수질(pH·COD·BOD·중금속)을 예측해 약품 투입량과 송풍 공정을 자동 최적화하는 SaaS입니다. 중소 산업단지 공동폐수처리장·개별 공장·지자체 하수처리장을 목표 고객으로 합니다.</p></div>
+<div class="card scroll" style="margin-top:14px"><h3>요금제 (예시)</h3>
+<table><tr><th>플랜</th><th>대상</th><th>포함 기능</th><th>월 요금</th></tr>
+<tr><td><b>Basic</b></td><td>소규모 사업장</td><td>실시간 모니터링, 수질 예측(3시간)</td><td>100만원</td></tr>
+<tr><td><b>Pro</b></td><td>중소 공장·공동폐수처리장</td><td>9시간 예측, 약품·송풍 최적화, 알림</td><td>300만원</td></tr>
+<tr><td><b>Enterprise</b></td><td>대형 사업장·지자체</td><td>자동제어 연동, ESG·온실가스 리포트, 맞춤 모델</td><td>협의</td></tr></table></div>
+<div class="card" style="margin-top:14px"><h3>선행 적용사례 (출처)</h3><ul style="margin:0;font-size:13px;padding-left:18px">
+<li>SK이노베이션 울산CLX 국내 정유사 최초 AI 폐수처리 시스템 도입 — 데일리안, 2022.03.13.</li>
+<li>SK에코플랜트 ZERO4 wwt: 예측정확도 약 90%, 전력 20%↓, 약품 25.3%↓ — 에너지경제 2023.05.23, 이투데이</li>
+<li>광주광역시 AI 수질 조기경보시스템 — 2026.09.10 보도</li></ul></div>
+</section>
+<section class="tab" id="t7"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px"><div><h3 style="margin:0;font-size:22px;color:var(--mid)">🎛 제어실 · 실시간 감시제어 (SCADA)</h3><span class="note">공정도 · 알람 · 이벤트 로그 · 장치 연동을 한 화면에서. 모든 값은 시뮬레이션입니다.</span></div><span style="flex:1"></span><button class="btn alt" id="fs">⛶ 전체화면</button></div><div id="hmiBox"></div></section>
+<section class="tab" id="t6"><div id="subArea"></div></section>
+</main>
+<footer>© 과제용 데모 · 모든 센서 데이터는 가상 시뮬레이션이며 절감 수치는 선행사례 기반 가정값입니다.</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const P={cod:{n:'COD',u:'mg/L',lim:60,c:'#065a82'},bod:{n:'BOD(추정)',u:'mg/L',lim:35,c:'#1c7293'},ph:{n:'pH',u:'',lim:9,c:'#d99a2b'},metal:{n:'중금속(Cu)',u:'mg/L',lim:0.5,c:'#8b5cf6'}};
+const H={cod:[],bod:[],ph:[],metal:[]};let t=0,spike=0,paused=false,sel1='cod',sel2='cod';
+function nxt(){t++;const r=()=>Math.random()-.5;
+ const cod=45+11*Math.sin(t/9)+r()*4+spike;
+ H.cod.push(cod);H.bod.push(cod*.5+r()*2);H.ph.push(7.2+.4*Math.sin(t/13)+r()*.1-spike*.004);H.metal.push(.3+.08*Math.sin(t/7)+r()*.03+spike*.004);
+ spike*=.88;if(spike<.5)spike=0;
+ for(const k in H)if(H[k].length>48)H[k].shift();}
+for(let i=0;i<48;i++)nxt();
+function fc(a,n){const m=a.length,last=a[m-1];const s=a.slice(-6).reduce((x,y)=>x+y,0)/6,p=a.slice(-12,-6).reduce((x,y)=>x+y,0)/6;
+ const sl=(s-p)/6,mean=a.reduce((x,y)=>x+y,0)/m;const out=[];let acc=0;
+ for(let k=1;k<=n;k++){acc+=Math.pow(.92,k);out.push(last+sl*acc+(mean-last)*(1-Math.pow(.95,k)));}return out;}
+function chart(el,k,n){const h=H[k],f=fc(h,n),lim=P[k].lim,all=h.concat(f,[lim]);
+ let lo=Math.min(...all),hi=Math.max(...all);const pd=(hi-lo)*.12||1;lo-=pd;hi+=pd;
+ const W=640,Hh=190,L=44,R=10,T=10,B=22,N=h.length+n;
+ const x=i=>L+(W-L-R)*i/(N-1),y=v=>T+(Hh-T-B)*(1-(v-lo)/(hi-lo));
+ const pts=a=>a.map((v,i)=>x(i+(a===f?h.length:0))+','+y(v)).join(' ');
+ let g='';for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4;g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--bd)"/><text x="${L-6}" y="${y(v)+4}" font-size="11" text-anchor="end" fill="var(--mu)">${v.toFixed(k==='ph'||k==='metal'?2:0)}</text>`}
+ el.innerHTML=`<svg viewBox="0 0 ${W} ${Hh}">${g}<line x1="${L}" x2="${W-R}" y1="${y(lim)}" y2="${y(lim)}" stroke="#c24b4b" stroke-dasharray="4 3"/>
+ <line x1="${x(h.length-1)}" x2="${x(h.length-1)}" y1="${T}" y2="${Hh-B}" stroke="var(--mu)" stroke-dasharray="2 3"/>
+ <polyline fill="none" stroke="${P[k].c}" stroke-width="2.2" points="${pts(h)}"/>
+ <polyline fill="none" stroke="${P[k].c}" stroke-width="2.2" stroke-dasharray="6 4" points="${x(h.length-1)+','+y(h[h.length-1])+' '+pts(f)}"/>
+ <text x="${x(h.length-1)}" y="${Hh-6}" font-size="11" text-anchor="middle" fill="var(--mu)">현재</text>
+ <text x="${W-R}" y="${Hh-6}" font-size="11" text-anchor="end" fill="var(--mu)">+${(n/6)}시간</text></svg>`;return f;}
+function chips(el,cur,cb){el.innerHTML=Object.keys(P).map(k=>`<button class="chip ${k===cur?'on':''}" data-k="${k}">${P[k].n}</button>`).join('');el.querySelectorAll('button').forEach(b=>b.onclick=()=>{cb(b.dataset.k);render()})}
+function cur(k){return H[k][H[k].length-1]}
+function render(){
+ // KPIs
+ $('kpis').innerHTML=Object.keys(P).map(k=>{const v=cur(k),bad=(k==='ph'?(v>9||v<6):v>P[k].lim*.95);
+ return `<div class="card kpi"><h3>${P[k].n}</h3><span class="v">${v.toFixed(k==='ph'||k==='metal'?2:1)}</span> <span class="u">${P[k].u}</span><div class="s ${bad?'bad':'ok'}">${bad?'⚠ 기준 근접/초과':'● 정상'} (기준 ${k==='ph'?'6~9':P[k].lim})</div></div>`}).join('');
+ chips($('chips1'),sel1,k=>sel1=k);chart($('chart1'),sel1,18);
+ chips($('chips2'),sel2,k=>sel2=k);const n=+$('hor').value,f=chart($('chart2'),sel2,n);
+ const mx=Math.max(...f),over=sel2==='ph'?mx>9:mx>P[sel2].lim;
+ $('predTxt').innerHTML=`예측 최대값 <b>${mx.toFixed(2)} ${P[sel2].u}</b> — ${over?'<span class="bad">관리기준 초과 가능성 → 약품·송풍 선제 조정 권고</span>':'<span class="ok">관리기준 이내 예상</span>'}`;
+ // alert
+ const fc9=fc(H.cod,54),pk=Math.max(...fc9),ab=pk>P.cod.lim;
+ $('alertBox').className='alert '+(ab?'bad':'ok');
+ $('alertBox').textContent=ab?`⚠ 이상 유입 조기경보: 향후 9시간 내 COD 최대 ${pk.toFixed(0)} mg/L 예상 (기준 ${P.cod.lim}). 응집제·폭기 선제 증량을 권고합니다.`:'정상 운전 중입니다. 향후 9시간 내 수질 기준 초과 징후가 없습니다.';
+ // optimize
+ const cp=Math.max(...fc(H.cod,54).slice(0,18)),ph=cur('ph'),dose=Math.min(150,Math.max(60,70+.8*cp+8*Math.abs(ph-7.2)));
+ const bp=Math.max(...fc(H.bod,18)),load=Math.min(1,Math.max(.3,bp/50)),out=65+35*load;
+ const auto=LV()>=3&&$('auto').checked,D=dose,O=out;
+ $('d2').textContent=D.toFixed(0)+' mg/L';$('b2').style.width=(D/150*100)+'%';
+ $('dSave').textContent='약품 '+((150-D)/150*100).toFixed(1)+'% 절감';
+ $('bl2').textContent=O.toFixed(0)+' %';$('b3').style.width=O+'%';
+ $('bSave').textContent='전력 약 '+((1-O/100)*100).toFixed(1)+'% 절감';
+ $('ctl').innerHTML=`약품펌프: <b>${D.toFixed(0)} mg/L</b> · 송풍기: <b>${O.toFixed(0)}%</b> · 모드: <b>${auto?'AI 자동제어(PLC 연동·데모)':'AI 권고(운전원 적용)'}</b>`;
+}
+function roi(){const a=+$('i1').value,b=+$('i2').value,pr=+$('i3').value,cs=+$('i4').value,ps=+$('i5').value,sub=+$('i6').value*12/100,ef=+$('i7').value;
+ $('v4').textContent=cs;$('v5').textContent=ps;
+ const sv=a*cs/100+b*ps/100,kwh=(b*1e6/pr)*ps/100,co2=kwh*ef/1000,net=sv-sub;
+ $('r1').textContent=sv.toFixed(1)+' 백만원/년';$('r2').textContent=sub.toFixed(1)+' 백만원/년';
+ $('r3').textContent=net.toFixed(1)+' 백만원/년';$('r4').textContent=co2.toFixed(0)+' tCO₂/년 ('+Math.round(kwh).toLocaleString()+' kWh 절감)';
+ $('r5').textContent=net>0?(sub/ sv*12).toFixed(1)+' 개월 (구독료 대비 절감 환산)':'절감액이 구독료보다 작음';}
+document.querySelectorAll('#t4 input').forEach(i=>i.oninput=roi);roi();
+$('hor').onchange=render;$('auto').onchange=render;
+$('spikeBtn').onclick=()=>{spike=40;render()};
+$('pauseBtn').onclick=e=>{paused=!paused;e.target.textContent=paused?'재생':'일시정지'};
+$('print').onclick=()=>window.print();
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#nav button,.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.t).classList.add('on');render()});
+const PL={basic:{n:'Basic',lv:1,m:1000000,f:['실시간 모니터링·이벤트 로그','수질 예측 (3시간)']},pro:{n:'Pro',lv:2,m:3000000,f:['Basic 전체','6·9시간 선행예측','약품·송풍 최적화 권고']},ent:{n:'Enterprise',lv:3,m:9000000,f:['Pro 전체','PLC 자동제어 연동(데모)','ESG·온실가스 리포트','맞춤 모델·전담 지원 (데모 요금)']}};
+let S={plan:'free',cyc:'m',hist:[],next:''},V='plans',selP='pro',met='card',last=null;
+try{Object.assign(S,JSON.parse(localStorage.getItem('aq_sub')||'{}'))}catch(e){}
+const sv=()=>{try{localStorage.setItem('aq_sub',JSON.stringify(S))}catch(e){}};
+function LV(){return S.plan==='free'?0:PL[S.plan].lv}
+const won=n=>Math.round(n).toLocaleString()+'원';
+function toast(m){const d=document.createElement('div');d.className='toast';d.textContent=m;document.body.append(d);setTimeout(()=>d.remove(),2600)}
+function go(t){document.querySelector('#nav [data-t='+t+']').click()}
+const REQ={t2:1,t7:1,t3:2};
+function gate(){for(const id in REQ){const s=$(id);let l=s.querySelector('.lockcard');
+ if(LV()<REQ[id]){if(!l){l=document.createElement('div');l.className='card lockcard';s.prepend(l)}
+  l.innerHTML=`<h3>🔒 ${REQ[id]===1?'Basic':'Pro'} 플랜 이상에서 사용 가능한 기능입니다</h3><p style="font-size:14px">구독하면 즉시 활성화됩니다. (데모: 가상 결제)</p><button class="btn">플랜 보기</button>`;l.querySelector('button').onclick=()=>go('t6');s.classList.add('locked')}
+ else{l&&l.remove();s.classList.remove('locked')}}
+ [...$('hor').options].forEach(o=>o.disabled=+o.value>18&&LV()<2);if($('hor').selectedOptions[0].disabled)$('hor').value=18;
+ $('auto').disabled=LV()<3;if(LV()<3)$('auto').checked=false;$('autoLbl').textContent=LV()<3?'(Enterprise 전용)':'';}
+function upd(on){$('planBadge').textContent=S.plan==='free'?'체험판':PL[S.plan].n+' 구독 중';gate();if(on&&LV()>=3)$('auto').checked=true;render()}
+function sub(){const A=$('subArea');
+ if(V==='plans'){A.innerHTML=`<div class="card" style="margin-bottom:14px"><h3>현재 구독</h3><b style="font-size:18px">${S.plan==='free'?'체험판 (무료)':PL[S.plan].n}</b>${S.plan!=='free'?` · 다음 결제일 ${S.next} <button class="btn alt" id="cx">구독 해지</button>`:' · 아래에서 플랜을 선택하면 기능이 활성화됩니다 (가상 결제)'}</div>
+<div class="chips"><button class="chip ${S.cyc==='m'?'on':''}" data-c="m">월 결제</button><button class="chip ${S.cyc==='y'?'on':''}" data-c="y">연 결제 (20% 할인)</button></div>
+<div class="grid g4">${Object.keys(PL).map(k=>{const p=PL[k];return `<div class="card plan ${k==='pro'?'hot':''}"><h3>${p.n}${k==='pro'?' ★추천':''}</h3><div class="big">${won(S.cyc==='y'?p.m*.8:p.m)}<small>/월 (VAT별도)</small></div><ul>${p.f.map(x=>`<li>${x}</li>`).join('')}</ul><button class="btn" data-p="${k}" ${S.plan===k?'disabled':''}>${S.plan===k?'이용 중':'선택하기'}</button></div>`}).join('')}</div>
+${S.hist.length?`<div class="card scroll" style="margin-top:14px"><h3>결제 내역</h3><table><tr><th>일시</th><th>주문번호</th><th>플랜</th><th>금액</th></tr>${S.hist.map(o=>`<tr><td>${o.dt}</td><td>${o.no}</td><td>${PL[o.p].n}(${o.cyc==='y'?'연':'월'})</td><td>${won(o.amt)}</td></tr>`).join('')}</table></div>`:''}`;
+  A.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{S.cyc=b.dataset.c;sv();sub()});
+  A.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{selP=b.dataset.p;V='co';sub()});
+  if($('cx'))$('cx').onclick=()=>{S.plan='free';S.next='';sv();upd();sub();toast('구독이 해지되어 체험판으로 전환되었습니다')}}
+ else if(V==='co'){const p=PL[selP],pr=S.cyc==='y'?p.m*12*.8:p.m,vat=pr*.1;
+  A.innerHTML=`<div class="alert bad">⚠ 데모 결제 화면입니다. 실제 결제는 이루어지지 않으며, 실제 카드 정보를 입력하지 마세요.</div><div class="grid g2"><div class="card"><h3>결제 정보</h3><div class="chips">${[['card','신용카드(테스트)'],['va','가상계좌'],['pay','간편결제(데모페이)']].map(([k,n])=>`<button class="chip ${met===k?'on':''}" data-m="${k}">${n}</button>`).join('')}</div>
+${met==='card'?`<label>카드번호</label><input id="cn" placeholder="4242 4242 4242 4242" maxlength="19"><div class="grid g2" style="gap:8px"><div><label>유효기간 MM/YY</label><input id="ce" placeholder="12/30" maxlength="5"></div><div><label>CVC</label><input id="cc" placeholder="123" maxlength="3"></div></div><button class="btn alt" id="fill" style="margin-top:8px">테스트 카드 자동입력</button>`:met==='va'?'<p class="note">결제 시 가상계좌(데모)가 발급되고 입금 완료로 시뮬레이션됩니다.</p>':'<p class="note">데모페이 잔액으로 즉시 결제된 것으로 시뮬레이션됩니다.</p>'}
+<label>회사명</label><input value="(주)데모케미칼"><label>이메일</label><input value="demo@example.com"><label><input type="checkbox" id="ag"> 이용약관 및 자동갱신에 동의합니다 (데모)</label><div id="err" class="bad note"></div></div>
+<div class="card"><h3>주문 요약</h3><table><tr><td>플랜</td><td>${p.n} (${S.cyc==='y'?'연':'월'} 결제)</td></tr><tr><td>공급가액</td><td>${won(pr)}</td></tr><tr><td>부가세(10%)</td><td>${won(vat)}</td></tr><tr><td><b>총 결제금액</b></td><td><b>${won(pr+vat)}</b></td></tr></table><button class="btn" id="pay" style="width:100%;margin-top:12px">${won(pr+vat)} 결제하기</button><button class="btn alt" id="bk" style="width:100%;margin-top:8px">← 플랜 다시 선택</button></div></div>`;
+  A.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{met=b.dataset.m;sub()});$('bk').onclick=()=>{V='plans';sub()};
+  if($('fill'))$('fill').onclick=()=>{$('cn').value='4242 4242 4242 4242';$('ce').value='12/30';$('cc').value='123'};
+  $('pay').onclick=()=>{let m='';
+   if(met==='card'){if($('cn').value.replace(/\s/g,'')!=='4242424242424242')m='데모에서는 테스트 카드 4242 4242 4242 4242 만 사용할 수 있습니다.';else if(!/^(0[1-9]|1[0-2])\/\d\d$/.test($('ce').value))m='유효기간을 MM/YY 형식으로 입력하세요.';else if(!/^\d{3}$/.test($('cc').value))m='CVC 3자리를 입력하세요.'}
+   if(!m&&!$('ag').checked)m='약관에 동의해 주세요.';
+   if(m){$('err').textContent=m;return}
+   $('pay').disabled=true;$('pay').textContent='결제 처리 중…';
+   setTimeout(()=>{const d=new Date(),nx=new Date(d);S.cyc==='y'?nx.setFullYear(d.getFullYear()+1):nx.setMonth(d.getMonth()+1);
+    last={no:'AQ-'+Date.now().toString(36).toUpperCase(),dt:d.toLocaleString('ko-KR'),p:selP,cyc:S.cyc,amt:pr+vat,met};
+    S.hist.unshift(last);S.plan=selP;S.next=nx.toLocaleDateString('ko-KR');sv();V='done';sub();upd(true)},1600)}}
+ else{const o=last,p=PL[o.p];A.innerHTML=`<div class="alert ok">✅ 결제가 완료되어 ${p.n} 플랜이 활성화되었습니다. (데모 결제 — 실제 청구 없음)</div><div class="grid g2"><div class="card"><h3>영수증</h3><table><tr><td>주문번호</td><td>${o.no}</td></tr><tr><td>결제일시</td><td>${o.dt}</td></tr><tr><td>플랜</td><td>${p.n} (${o.cyc==='y'?'연':'월'} 결제)</td></tr><tr><td>결제수단</td><td>${{card:'테스트 카드 •••• 4242',va:'가상계좌(데모)',pay:'데모페이'}[o.met]}</td></tr><tr><td>결제금액(VAT 포함)</td><td><b>${won(o.amt)}</b></td></tr><tr><td>다음 결제일</td><td>${S.next}</td></tr></table></div><div class="card"><h3>활성화된 기능</h3><ul>${p.f.map(x=>`<li>${x}</li>`).join('')}</ul><button class="btn" id="gd">대시보드로 이동</button> <button class="btn alt" onclick="window.print()">영수증 인쇄</button></div></div>`;$('gd').onclick=()=>go('t1')}}
+document.querySelector('#nav [data-t=t6]').addEventListener('click',()=>{if(V==='done')V='plans';sub()});
+const LOG=[];let al=false;const lb=document.createElement('div');lb.className='card';lb.id='logBox';lb.style.marginTop='14px';$('t1').append(lb);
+function logChk(){const pk=Math.max(...fc(H.cod,54));if(pk>P.cod.lim&&!al){al=true;const m=480+t*10;LOG.unshift(String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0')+' · COD 초과 예측(최대 '+pk.toFixed(0)+' mg/L) — 응집제·폭기 선제 조정 권고')}else if(pk<=P.cod.lim)al=false;if(LOG.length>6)LOG.pop();
+ lb.innerHTML=`<h3>이벤트·알람 로그 <span class="note">방류기준 준수율(최근 8시간 COD): <b>${(H.cod.filter(v=>v<=P.cod.lim).length/H.cod.length*100).toFixed(0)}%</b></span></h3>`+(LOG.length?LOG.map(x=>`<div style="font-size:13px;padding:4px 0;border-bottom:1px solid var(--bd)">${x}</div>`).join(''):'<div class="note">알람 없음</div>')}
+const ORD=['t0','t1','t2','t7','t3','t4','t6','t5'];let cT='t0';
+document.querySelectorAll('#nav button').forEach(b=>b.addEventListener('click',()=>{const n=b.dataset.t,el=$(n),d=ORD.indexOf(n)>=ORD.indexOf(cT)?'inR':'inL';cT=n;el.classList.remove('inR','inL');void el.offsetWidth;el.classList.add(d);window.scrollTo({top:0,behavior:'smooth'})}));
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+if(location.hash==='#scada')setTimeout(()=>go('t7'),0);upd();sub();logChk();setInterval(()=>{if(!paused){nxt();render();logChk()}},1500);
+
+const EQ=[{g:'P-101',n:'유입펌프',x:90,y:200,t:'pump'},{g:'FIT-101',n:'유입 유량계',x:170,y:200,t:'inst',k:'FIT'},{g:'AIT-201',n:'pH 계',x:280,y:160,t:'inst',k:'AIT'},{g:'P-201',n:'PAC 주입펌프',x:375,y:70,t:'pump'},{g:'M-201',n:'급속교반기',x:440,y:150,t:'mix'},{g:'BLW-301',n:'송풍기 #1',x:530,y:60,t:'blw'},{g:'BLW-302',n:'송풍기 #2',x:590,y:60,t:'blw'},{g:'AIT-301',n:'DO 계',x:600,y:165,t:'inst',k:'AIT'},{g:'LIT-401',n:'슬러지 계면계',x:715,y:150,t:'inst',k:'LIT'},{g:'P-401',n:'슬러지 인발펌프',x:715,y:270,t:'pump'},{g:'AIT-501',n:'방류 COD계',x:840,y:160,t:'inst',k:'AIT'}];
+const SC={RUN:'#22c55e',STOP:'#6b7a8d',STBY:'#f5c542',FAULT:'#ef4444'},E={},AL=[];let sel='',built=false,lv=1.1,hb=0,HV={};
+EQ.forEach((d,i)=>E[d.g]={st:'RUN',md:'AUTO',sp:d.g==='P-201'?150:45,flt:false,h:8000+i*1370});E['BLW-302'].st='STBY';E['P-401'].st='STOP';
+const clk=()=>{const m=480+t*10;return String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
+function pidSvg(){let s='<path d="M10 200H890" stroke="#27455f" stroke-width="10"/><path class="dp" d="M10 200H890" stroke="#3fc1ee" stroke-width="3" fill="none"/>';
+ [[230,100,'중화조'],[360,100,'응집조'],[490,140,'폭기조'],[660,110,'침전조']].forEach(([x,w,n])=>{s+=`<rect x="${x}" y="120" width="${w}" height="100" rx="6" fill="#12253a" stroke="#5a86a8" stroke-width="2"/><rect x="${x+3}" y="140" width="${w-6}" height="77" rx="4" fill="#1f6f9c" opacity=".4"/><text x="${x+w/2}" y="112" text-anchor="middle" fill="#9fb8cc" font-size="13">${n}</text>`});
+ s+='<rect id="sl" x="663" y="190" width="104" height="27" fill="#7a5a2b" opacity=".85"/><path d="M375 87V120M530 77V95H590V77M560 95V200M715 220V253M732 270H800" stroke="#7e93a8" stroke-width="3" fill="none"/><text x="805" y="274" fill="#9fb8cc" font-size="12">→ 탈수기</text><text x="12" y="190" fill="#9fb8cc" font-size="12">유입</text><text x="852" y="190" fill="#9fb8cc" font-size="12">방류</text>';
+ EQ.forEach(d=>{const{x,y,g}=d;let b='';
+  if(d.t==='pump')b=`<circle id="s_${g}" cx="${x}" cy="${y}" r="17" fill="#0a1320" stroke="#6b7a8d" stroke-width="3"/><path id="a_${g}" d="M${x-6} ${y-8}L${x+9} ${y}L${x-6} ${y+8}Z" fill="#6b7a8d"/>`;
+  else if(d.t==='blw')b=`<circle id="s_${g}" cx="${x}" cy="${y}" r="17" fill="#0a1320" stroke="#6b7a8d" stroke-width="3"/><text x="${x}" y="${y+5}" class="vt" id="a_${g}t">B</text>`;
+  else if(d.t==='mix')b=`<rect id="s_${g}" x="${x-14}" y="${y-9}" width="28" height="18" rx="3" fill="#0a1320" stroke="#6b7a8d" stroke-width="3"/><text x="${x}" y="${y+4}" class="vt">M</text>`;
+  else b=`<circle id="s_${g}" cx="${x}" cy="${y}" r="14" fill="#0a1320" stroke="#3fc1ee" stroke-width="3"/><text x="${x}" y="${y+3}" class="vt" style="font-size:9px">${d.k}</text>`;
+  const up=d.t==='inst'||d.t==='blw';s+=`<g data-eq="${g}">${b}<text id="v_${g}" x="${x}" y="${up?y-23:y+32}" class="vt"></text><text x="${x}" y="${up?y+(d.t==='blw'?32:28):y+44}" class="tg">${g}</text></g>`});return s}
+function scBuild(){$('hmiBox').innerHTML=`<div class="sc"><div class="bar"><span class="tt">AQUAOPT SCADA · SITE-01 폐수처리장 (데모)</span><span class="ch" id="c1"></span><span class="ch" id="c2"></span><span class="ch" id="c3"></span><span class="ch" id="c4"></span><span class="ch" id="c5"></span><span class="ch" id="c6"></span></div><div class="sct" style="margin-bottom:6px"><button class="btn" data-v="pv">공정도 (P&ID)</button><button class="btn alt" data-v="ev">이벤트 로그 <b id="evn"></b></button></div><div id="pv">
+<div class="gr"><div><svg viewBox="0 0 900 320" style="width:100%;display:block;background:#0a1320;border-radius:8px">${pidSvg()}</svg><div class="pn" id="fp"></div></div>
+<div><div class="pn" style="margin-top:0"><h5>ALARM SUMMARY <button class="btn alt" id="ack" style="float:right">전체 ACK</button></h5><div id="alm"></div></div><div class="pn"><h5>수질 진단 · 상관/회귀 분석</h5><div id="dg" style="font:12px monospace;line-height:1.7"></div></div><div class="pn"><h5>인터록 · 자동 시퀀스</h5><div id="il" style="font:12px monospace;line-height:1.7"></div></div></div></div>
+<div class="pn"><h5>EQUIPMENT STATUS · 설비 진단</h5><div class="scroll"><table><thead><tr><th>TAG</th><th>명칭</th><th>상태</th><th>모드</th><th>현재값</th><th>진단</th></tr></thead><tbody id="tb"></tbody></table></div></div>
+<div class="pn"><h5>장치 연동 · 통신 설정</h5><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><select id="pr" style="width:auto;background:#13263b;color:#d6e4f0;border-color:#25507a"><option>Modbus TCP</option><option>OPC UA</option><option>MQTT</option></select><button class="btn" id="cn">연결 테스트</button><span id="cr" style="font-size:12px;color:#7e93a8">미실행 · 현재 시뮬레이션 데이터 소스</span></div><div class="scroll"><table id="mp"></table></div></div>
+</div><div id="ev" hidden><div class="pn" style="margin-top:0"><h5>EVENT LOG · 이벤트 / 감사 로그</h5><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px"><select id="ef" style="width:auto;background:#13263b;color:#d6e4f0;border-color:#25507a"><option value="">전체 유형</option><option>ALARM</option><option>RTN</option><option>ACK</option><option>OPER</option><option>STATE</option><option>AI</option><option>COMM</option><option>FAULT</option><option>SYSTEM</option></select><select id="es" style="width:auto;background:#13263b;color:#d6e4f0;border-color:#25507a"><option value="">전체 등급</option><option>HH</option><option>H</option><option>W</option><option>I</option></select><input id="eq" placeholder="태그·내용·사용자 검색" style="width:190px;background:#13263b;color:#d6e4f0;border-color:#25507a"><button class="btn alt" id="ecsv">CSV 저장</button><span id="ecn" style="font-size:12px;color:#7e93a8"></span></div><div class="scroll" style="max-height:440px;overflow:auto"><table><thead><tr><th>#</th><th>시각</th><th>유형</th><th>등급</th><th>TAG</th><th>내용</th><th>사용자</th></tr></thead><tbody id="eb"></tbody></table></div><p style="font-size:11px;color:#7e93a8;margin:8px 0 0">유형: ALARM 알람 발생 · RTN 정상 복귀 · ACK 확인 · OPER 운전원 조작 · STATE 자동 상태변경 · AI 최적화 권고 · COMM 통신 · FAULT 설비 고장 · SYSTEM 시스템 / 등급: HH 긴급 · H 경고 · W 주의 · I 정보 (시각은 시뮬레이션 시계)</p></div></div>
+<button class="btn alt" id="snd">🔔 알람음 ON</button><button class="btn alt" id="flt">⚠ 송풍기 #1 과전류 트립 시뮬레이션</button><button class="btn alt" id="rst">트립 복귀</button></div>`;elog('COMM','I','PLC','PLC 연결 수립 (시뮬레이션)','SYSTEM');elog('SYSTEM','I','SCADA','HMI 세션 시작','SYSTEM');mapT();fp()}
+function mapT(){const pr=$('pr').value;$('mp').innerHTML='<tr><th>TAG</th><th>'+pr+' 주소</th><th>방향</th></tr>'+EQ.map((d,i)=>`<tr><td>${d.g}</td><td>${pr==='Modbus TCP'?'4'+String(1+i*2).padStart(4,'0')+' (HR)':pr==='OPC UA'?'ns=2;s=Site01.'+d.g:'aquaopt/site01/'+d.g}</td><td>${d.t==='inst'?'READ':'R/W'}</td></tr>`).join('')}
+function fp(){const e=E[sel],d=EQ.find(x=>x.g===sel);if(!e){$('fp').innerHTML='<span style="color:#7e93a8">P&ID의 장비를 클릭하면 페이스플레이트(운전 조작창)가 열립니다.</span>';return}
+ const ctl=d.t!=='inst',ai=LV()>=3&&$('auto').checked,sp=sel==='P-201'||sel.startsWith('BLW');
+ $('fp').innerHTML=`<h5>FACEPLATE · ${sel} ${d.n}</h5><div>상태 <b id="fps"></b> · 현재값 <b id="fpv"></b></div>`+(ctl?`<div style="margin-top:6px">운전모드 <button class="btn ${e.md==='AUTO'?'':'alt'}" data-a="auto">AUTO</button><button class="btn ${e.md==='MAN'?'':'alt'}" data-a="man">MAN</button>${e.md==='MAN'?'<button class="btn alt" data-a="start">기동</button><button class="btn alt" data-a="stop">정지</button>':''}</div>`+(e.md==='MAN'&&sp?`<div style="margin-top:6px">설정값(SP) <input type="range" id="sp" min="${sel==='P-201'?40:20}" max="${sel==='P-201'?200:60}" value="${e.sp}" style="width:55%"> <b id="spv">${e.sp}</b> ${sel==='P-201'?'mg/L':'Hz'}</div>`:`<div style="margin-top:6px;color:#7e93a8;font-size:12px">${e.md==='AUTO'?(ai?'AUTO — AI 권고값 자동 적용 (PLC 연동·데모)':'AUTO — 기존 PLC 로직(고정 설정). AI 자동 적용은 Enterprise'):'MAN — 운전원 수동 조작'}</div>`):'<div style="color:#7e93a8;margin-top:6px">계측기 (읽기 전용)</div>')}
+const EVL=[],PS={};let en=0,ld=150;
+function elog(ty,pri,tag,msg,u){EVL.unshift({n:++en,tm:clk(),ty,pri,tag,msg,u:u||'SYSTEM'});if(EVL.length>300)EVL.pop()}
+function alm(k,on,pri,tag,msg){let a=AL.find(x=>x.k===k);if(on){if(!a){AL.unshift({k,pri,tag,msg,tm:clk(),ack:false,act:true});elog('ALARM',pri,tag,msg+' 발생')}else{if(!a.act)elog('ALARM',pri,tag,msg+' 재발생');a.act=true;a.msg=msg}}else if(a){if(a.act)elog('RTN','I',tag,a.msg+' → 정상 복귀');a.act=false;if(a.ack)AL.splice(AL.indexOf(a),1)}}
+function reg(x,y){const n=x.length,mx=x.reduce((a,b)=>a+b)/n,my=y.reduce((a,b)=>a+b)/n;let sxy=0,sxx=0,syy=0;for(let i=0;i<n;i++){sxy+=(x[i]-mx)*(y[i]-my);sxx+=(x[i]-mx)**2;syy+=(y[i]-my)**2}return{a:sxy/sxx,b:my-sxy/sxx*mx,r:sxy/Math.sqrt(sxx*syy)}}
+let AC=null,snd=true,sTick=0;
+function initAudio(){try{if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}}
+function beep(f,d,at){if(!AC||!snd)return;const o=AC.createOscillator(),g=AC.createGain(),t0=AC.currentTime+(at||0);o.type='square';o.frequency.value=f;g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.08,t0+.01);g.gain.linearRampToValueAtTime(0,t0+d);o.connect(g);g.connect(AC.destination);o.start(t0);o.stop(t0+d+.02)}
+function sndAlarm(){const a=AL.filter(x=>x.act&&!x.ack);if(!a.length||!snd)return;sTick++;const p=a.some(x=>x.pri==='HH')?'HH':a.some(x=>x.pri==='H')?'H':'W';
+ if(p==='HH'){beep(880,.18,0);beep(1180,.18,.22);beep(880,.18,.44);beep(1180,.18,.66)}else if(p==='H'){beep(740,.3,0);beep(740,.3,.4)}else if(sTick%2)beep(520,.25,0)}
+function evRender(){if(!$('ev')||$('ev').hidden)return;const f=$('ef').value,sv=$('es').value,q=$('eq').value.trim().toLowerCase(),C={ALARM:'#f59e0b',RTN:'#22c55e',ACK:'#60a5fa',OPER:'#3fc1ee',STATE:'#cbd5e1',AI:'#c084fc',COMM:'#94a3b8',SYSTEM:'#94a3b8',FAULT:'#ef4444'},L=EVL.filter(e=>(!f||e.ty===f)&&(!sv||e.pri===sv)&&(!q||(e.tag+e.msg+e.u).toLowerCase().includes(q)));
+$('ecn').textContent='총 '+EVL.length+'건 · 표시 '+Math.min(L.length,150)+'건';
+$('eb').innerHTML=L.slice(0,150).map(e=>`<tr><td>${e.n}</td><td>${e.tm}</td><td style="color:${C[e.ty]||'#fff'}">${e.ty}</td><td style="color:${e.pri==='HH'?'#ef4444':e.pri==='H'?'#f59e0b':e.pri==='W'?'#f5c542':'#7e93a8'}">${e.pri}</td><td>${e.tag}</td><td style="font-family:inherit">${e.msg}</td><td>${e.u}</td></tr>`).join('')||'<tr><td colspan="7" style="color:#7e93a8">해당 이벤트가 없습니다</td></tr>'}
+function scUpd(){if(!$('t7').classList.contains('on')||!built)return;const L=LV(),ai=L>=3&&$('auto').checked;hb++;
+ const cp=Math.max(...fc(H.cod,54).slice(0,18)),ph=cur('ph'),cod=cur('cod'),dose=Math.min(150,Math.max(60,70+.8*cp+8*Math.abs(ph-7.2))),out=65+35*Math.min(1,Math.max(.3,Math.max(...fc(H.bod,18))/50)),Q=520+45*Math.sin(t/11)+Math.random()*8,pk=Math.max(...fc(H.cod,54));
+ const au=g=>g==='P-201'?((ph<6||ph>9)?'STOP':'RUN'):g==='BLW-302'?(E['BLW-301'].flt?'RUN':'STBY'):g==='P-401'?(lv>1.6?'RUN':lv<1?'STOP':E['P-401'].st):'RUN';
+ EQ.forEach(d=>{const e=E[d.g];if(d.t==='inst')return;if(e.flt)e.st='FAULT';else if(e.md==='AUTO')e.st=au(d.g)});
+ EQ.forEach(d=>{const e=E[d.g];if(d.t==='inst')return;if(PS[d.g]!==undefined&&PS[d.g]!==e.st&&e.md==='AUTO'&&e.st!=='FAULT')elog('STATE','I',d.g,'상태 변경 '+PS[d.g]+' → '+e.st+' (자동 시퀀스)','PLC');PS[d.g]=e.st});
+ const run=g=>E[g].st==='RUN',hz=g=>!run(g)?0:(E[g].md==='MAN'?E[g].sp:(ai?60*out/100:60)),h1=hz('BLW-301'),h2=hz('BLW-302'),kw=75*((h1/60)**3+(h2/60)**3),DO=Math.max(.1,(h1+h2)/60*1.7+.4+(Math.random()-.5)*.1),dz=run('P-201')?(E['P-201'].md==='MAN'?E['P-201'].sp:(ai?dose:150)):0;
+ lv=Math.max(.3,Math.min(2.2,lv+(run('P-401')?-.07:.025)+(Math.random()-.5)*.01));
+ if(Math.abs(dose-ld)>=10){elog('AI','I','AI-OPT','PAC 권고량 '+dose.toFixed(0)+' mg/L로 갱신 (예측 COD '+cp.toFixed(0)+' mg/L)','AquaOpt AI');ld=dose}
+ HV={'P-101':run('P-101')?(Q/12.4).toFixed(1)+' Hz':E['P-101'].st,'FIT-101':Q.toFixed(0)+' m³/h','AIT-201':ph.toFixed(2)+' pH','P-201':run('P-201')?dz.toFixed(0)+' mg/L':E['P-201'].st,'M-201':run('M-201')?'60 rpm':E['M-201'].st,'BLW-301':run('BLW-301')?h1.toFixed(0)+' Hz':E['BLW-301'].st,'BLW-302':run('BLW-302')?h2.toFixed(0)+' Hz':E['BLW-302'].st,'AIT-301':DO.toFixed(2)+' mg/L','LIT-401':lv.toFixed(2)+' m','P-401':E['P-401'].st,'AIT-501':cod.toFixed(1)+' mg/L'};
+ alm('cod',cod>P.cod.lim*.95,'H','AIT-501','COD 상한 근접 '+cod.toFixed(0)+' mg/L');alm('pc',pk>P.cod.lim,'W','AI-PRED','COD 초과 예측(선행경보) 최대 '+pk.toFixed(0)+' mg/L');alm('ph',ph<6||ph>9,'HH','AIT-201','pH 범위 이탈 '+ph.toFixed(2));alm('lv',lv>1.6,'H','LIT-401','슬러지 계면 상한 '+lv.toFixed(2)+' m');alm('b1',E['BLW-301'].flt,'HH','BLW-301','과전류 트립 (51) — BLW-302 자동 기동');alm('do',DO<.5,'H','AIT-301','DO 저하 '+DO.toFixed(2)+' mg/L');alm('mt',cur('metal')>P.metal.lim*.95,'H','AIT-501','중금속 기준 근접');
+ EQ.forEach((d,i)=>{const e=E[d.g],c=SC[e.st],s=$('s_'+d.g);if(d.t!=='inst'){s.setAttribute('stroke',c);s.classList.toggle('blk',e.st==='FAULT');const a=$('a_'+d.g);a&&a.setAttribute('fill',c)}s.setAttribute('stroke-width',sel===d.g?5:3);$('v_'+d.g).textContent=HV[d.g]});
+ const sh=lv/2.2*75;$('sl').setAttribute('y',217-sh);$('sl').setAttribute('height',sh);
+ const na=AL.filter(a=>a.act&&!a.ack).length;sndAlarm();
+ $('c1').innerHTML='PLC <b class="ok2">● CONNECTED</b> #'+hb;$('c2').innerHTML='LTE ▂▄▆ · DB 검증 <b class="ok2">OK</b>';$('c3').innerHTML='MODE <b>'+(ai?'AUTO(AI)':'ADVISORY')+'</b>';$('c4').innerHTML='BLW '+kw.toFixed(0)+' kW';$('c5').innerHTML='ALM <b class="'+(na?'blk er':'ok2')+'" style="color:'+(na?'#ef4444':'')+'">'+na+'</b>';$('c6').textContent=clk();
+ $('alm').innerHTML=AL.slice(0,6).map(a=>`<div class="al ${a.act&&!a.ack?'blk':''}"><b style="color:${a.pri==='HH'?'#ef4444':a.pri==='H'?'#f59e0b':'#f5c542'}">${a.pri}</b><span>${a.tm}</span><span>${a.tag}</span><span style="flex:1;${a.act?'':'opacity:.5'}">${a.msg}${a.act?'':' (복귀)'}</span>${a.ack?'✓':''}</div>`).join('')||'<span style="color:#7e93a8">알람 없음</span>';
+ $('tb').innerHTML=EQ.map((d,i)=>{const e=E[d.g],rot=d.t!=='inst';const dg=!rot?'정상':e.st==='FAULT'?'<span style="color:#ef4444">과전류 트립(51)</span>':e.st==='RUN'?'진동 '+(1.6+.5*Math.sin(t/4+i)).toFixed(1)+'mm/s · '+(46+i*1.5).toFixed(0)+'℃ · '+Math.round(e.h+t*.17)+'h':'대기';return `<tr><td>${d.g}</td><td>${d.n}</td><td style="color:${rot?SC[e.st]:'#3fc1ee'}">${rot?e.st:'ONLINE'}</td><td>${rot?e.md:'-'}</td><td>${HV[d.g]}</td><td>${dg}</td></tr>`}).join('');
+ const r=reg(H.cod,H.bod);$('dg').innerHTML=`BOD(추정) = ${r.a.toFixed(2)}×COD ${r.b<0?'−':'+'} ${Math.abs(r.b).toFixed(1)}<br>상관계수 r = ${r.r.toFixed(3)} (n=${H.cod.length})<br>체류시간 후 방류 COD 예측<br>&nbsp;· +2h ${fc(H.cod,12)[11].toFixed(1)} · +6h ${fc(H.cod,36)[35].toFixed(1)} mg/L<br><span style="color:#7e93a8">※ 실험실 BOD로 주기 보정 필요</span>`;
+ const il=[[E['BLW-301'].flt,'BLW-301 트립 → BLW-302 자동 기동'],[lv>1.6||run('P-401'),'LIT-401 > 1.6m → P-401 자동 인발 (계면 기반)'],[DO<.5,'DO < 0.5 → 송풍 증속 요청'],[ph<6||ph>9,'pH 범위 이탈 → PAC 주입 정지 (안전)']];
+ $('il').innerHTML=il.map(([a,m])=>`<div><span style="color:${a?'#f59e0b':'#22c55e'}">${a?'▶ 동작':'● 정상'}</span> ${m}</div>`).join('');
+ if($('fps')){$('fps').innerHTML=sel&&E[sel]&&EQ.find(x=>x.g===sel).t!=='inst'?`<span style="color:${SC[E[sel].st]}">${E[sel].st}</span>`:'ONLINE';$('fpv').textContent=HV[sel]}$('evn').textContent='('+EVL.length+')';evRender()}
+$('hmiBox').addEventListener('click',ev=>{const g=ev.target.closest('[data-eq]'),a=ev.target.closest('[data-a]'),vb=ev.target.closest('[data-v]'),id=ev.target.id;
+ if(vb){$('pv').hidden=vb.dataset.v!=='pv';$('ev').hidden=vb.dataset.v!=='ev';document.querySelectorAll('.sct .btn').forEach(b=>b.classList.toggle('alt',b!==vb));evRender()}
+ if(id==='ecsv'){const c='\ufeff#,시각,유형,등급,TAG,내용,사용자\n'+EVL.map(e=>[e.n,e.tm,e.ty,e.pri,e.tag,'"'+e.msg.replace(/"/g,'""')+'"',e.u].join(',')).join('\n'),l=document.createElement('a');l.href=URL.createObjectURL(new Blob([c],{type:'text/csv'}));l.download='event_log.csv';l.click()}
+ if(g){sel=g.dataset.eq;fp()}
+ if(a&&E[sel]){const e=E[sel],k=a.dataset.a;elog('OPER','I',sel,{auto:'운전모드 AUTO 전환',man:'운전모드 MAN 전환',start:'수동 기동 명령',stop:'수동 정지 명령'}[k],'운전원');if(k==='auto')e.md='AUTO';if(k==='man'){e.md='MAN'}if(k==='start'&&!e.flt)e.st='RUN';if(k==='stop')e.st='STOP';fp()}
+ initAudio();if(id==='ack'){const n=AL.filter(x=>!x.ack).length;AL.forEach(x=>x.ack=true);if(n)elog('ACK','I','OPERATOR','알람 '+n+'건 확인(ACK)','운전원')}if(id==='snd'){snd=!snd;$('snd').textContent=snd?'🔔 알람음 ON':'🔕 알람음 OFF';if(snd)beep(660,.15,0)}if(id==='flt'){E['BLW-301'].flt=true;elog('FAULT','HH','BLW-301','과전류 트립(51) 발생 (시뮬레이션 주입)','SYSTEM')}if(id==='rst'){elog('OPER','I','BLW-301','트립 복귀(리셋) 명령','운전원');E['BLW-301'].flt=false;E['BLW-301'].st='RUN'}
+ if(id==='cn'){elog('COMM','I','GATEWAY',$('pr').value+' 연결 테스트 실행','운전원');$('cr').textContent='연결 중…';setTimeout(()=>{elog('COMM','I','GATEWAY','게이트웨이 응답 12ms (시뮬레이션 소스)','SYSTEM');$('cr').textContent='✔ 게이트웨이 응답 12ms · 시뮬레이션 소스 (실제 PLC/RTU 연동은 Enterprise 협의)'},1200)}scUpd()});
+$('hmiBox').addEventListener('input',ev=>{if(ev.target.id==='sp'){E[sel].sp=+ev.target.value;$('spv').textContent=ev.target.value}if(ev.target.id==='eq')evRender();});
+$('hmiBox').addEventListener('change',ev=>{const i=ev.target.id;if(i==='pr')mapT();if(i==='sp')elog('OPER','I',sel,'설정값(SP) '+ev.target.value+(sel==='P-201'?' mg/L':' Hz')+' 변경','운전원');if(i==='ef'||i==='es')evRender()});
+$('nav').querySelector('[data-t=t7]').addEventListener('click',()=>{initAudio();if(!built&&LV()>=1){scBuild();built=true}scUpd()});
+$('fs').onclick=()=>{const e=$('t7'),f=e.requestFullscreen||e.webkitRequestFullscreen;f?f.call(e):toast('이 브라우저에서는 전체화면을 지원하지 않습니다')};
+$('goScada').onclick=()=>go('t7');setInterval(scUpd,1500);
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12}),rvs=document.querySelectorAll('#t0 .rv');rvs.forEach(x=>io.observe(x));
+document.querySelector('#nav [data-t=t0]').addEventListener('click',()=>rvs.forEach(x=>{x.classList.remove('in');io.unobserve(x);io.observe(x)}));
+</script>
+</body>
+</html>
